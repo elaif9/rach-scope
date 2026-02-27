@@ -17,7 +17,7 @@ blocklist = [
 
 # Collect data files and submodules
 datas = [
-    ('assets', 'assets'),  # Include assets folder
+    # ('assets', 'assets'),  # TODO: Uncomment when assets folder is created
 ]
 
 # Collect all hidden imports
