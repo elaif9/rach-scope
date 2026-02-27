@@ -1,0 +1,83 @@
+name: Build RachScope
+
+on:
+  release:
+    types: [created]  # Only build when a new release is created
+  workflow_dispatch:  # Enable manual trigger for testing
+
+jobs:
+  build-windows:
+    name: Build Windows Executable
+    runs-on: windows-latest
+
+    permissions:
+      contents: write  # Required for uploading release assets
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller RachScope.spec --clean
+
+      - name: Zip the Executable
+        run: |
+          Compress-Archive -Path dist/RachScope.exe -DestinationPath RachScope-Windows.zip
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: RachScope-Windows.zip
+          name: RachScope-Windows
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-macos:
+    name: Build MacOS Application
+    runs-on: macos-latest
+
+    permissions:
+      contents: write  # Required for uploading release assets
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller RachScope.spec --clean
+
+      - name: Create DMG
+        run: |
+          hdiutil create -volname "RachScope" -srcfolder dist/RachScope.app -ov -format UDZO RachScope-MacOS.dmg
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: RachScope-MacOS.dmg
+          name: RachScope-MacOS
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
