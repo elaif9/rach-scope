@@ -5,6 +5,7 @@ PyInstaller specification file for building executable
 """
 
 import os
+import sys
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 # Blocklist: These modules are not used and should be excluded
@@ -38,6 +39,9 @@ binaries = []
 
 block_cipher = None
 
+# Detect platform
+is_macos = sys.platform == 'darwin'
+
 a = Analysis(
     ['main.py'],
     pathex=[],
@@ -56,23 +60,64 @@ a = Analysis(
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.datas,
-    [],
-    name='RachScope',
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
-    console=False,  # Hide console window
-    disable_windowed_traceback=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-    icon=None,  # Add icon path here: 'assets/icon.ico' for Windows, 'assets/icon.icns' for MacOS
-)
+if is_macos:
+    # macOS: Create .app bundle
+    exe = EXE(
+        pyz,
+        a.scripts,
+        [],
+        exclude_binaries=True,
+        name='RachScope',
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=True,
+        console=False,
+        disable_windowed_traceback=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None,
+    )
+    coll = COLLECT(
+        exe,
+        a.binaries,
+        a.datas,
+        strip=False,
+        upx=True,
+        upx_exclude=[],
+        name='RachScope',
+    )
+    app = BUNDLE(
+        coll,
+        name='RachScope.app',
+        icon=None,  # TODO: Add 'assets/icon.icns' when assets folder is created
+        bundle_identifier='com.rachscope.app',
+        info_plist={
+            'CFBundleDisplayName': 'RachScope',
+            'CFBundleName': 'RachScope',
+            'CFBundleExecutable': 'RachScope',
+            'CFBundleVersion': '1.0.0',
+        },
+    )
+else:
+    # Windows/Linux: Create single executable
+    exe = EXE(
+        pyz,
+        a.scripts,
+        a.binaries,
+        a.datas,
+        [],
+        name='RachScope',
+        debug=False,
+        bootloader_ignore_signals=False,
+        strip=False,
+        upx=True,
+        upx_exclude=[],
+        runtime_tmpdir=None,
+        console=False,
+        disable_windowed_traceback=False,
+        target_arch=None,
+        codesign_identity=None,
+        entitlements_file=None,
+        icon=None,  # TODO: Add 'assets/icon.ico' when assets folder is created
+    )
