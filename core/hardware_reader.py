@@ -133,7 +133,7 @@ class ModbusReader:
                 response = self.client.read_holding_registers(
                     address=self.reg_bt,
                     count=1,
-                    slave_id=self.slave_id_bt
+                    device_id=self.slave_id_bt
                 )
 
                 if response.isError():
@@ -196,11 +196,11 @@ class ModbusReader:
                 self.logger.warning(f"Client not connected for {sensor_name}")
                 return None
 
-            # Read holding register (use slave_id parameter for pymodbus 3.x)
+            # Read holding register (use device_id parameter for pymodbus 3.x)
             response = self.client.read_holding_registers(
                 address=register,
                 count=1,
-                slave_id=slave_id
+                device_id=slave_id
             )
 
             if response.isError():

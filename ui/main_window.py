@@ -52,6 +52,7 @@ class MainWindow(QMainWindow):
         # Window setup
         self.setWindowTitle('Rach Scope - Coffee Roasting Monitor')
         self.setGeometry(100, 100, 1200, 800)
+        self.setWindowIcon(QIcon('assets/logo/logo.jpg'))
 
         # Create central widget and layout
         self.central_widget = QWidget()

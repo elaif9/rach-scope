@@ -3,8 +3,26 @@ Rach Scope - Coffee Roasting Monitoring Application
 Entry point for the application
 """
 import sys
+import ctypes
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
+
+
+def _set_process_name(name: str):
+    """Set process name for macOS Cmd+Tab display"""
+    if sys.platform == 'darwin':
+        # macOS: use CFBundleDisplayName via CoreFoundation
+        try:
+            libc = ctypes.CDLL('libSystem.dylib')
+            # Try to set the process name using setproctitle
+            try:
+                libc.setproctitle.argtypes = [ctypes.c_char_p]
+                libc.setproctitle(name.encode('utf-8'))
+            except AttributeError:
+                pass
+        except Exception:
+            pass
 
 from ui.main_window import MainWindow
 from core.config_manager import ConfigManager
@@ -23,6 +41,16 @@ def main():
     # Create Qt application
     app = QApplication(sys.argv)
     app.setStyle('Fusion')  # Use Fusion style for consistent look across platforms
+
+    # Set application name for proper display in macOS Cmd+Tab
+    app.setApplicationName('RachScope')
+    app.setOrganizationName('RachScope')
+
+    # Set process name for macOS (needed for Cmd+Tab)
+    _set_process_name('RachScope')
+
+    # Set app icon
+    app.setWindowIcon(QIcon('assets/logo/logo.jpg'))
 
     # Initialize core components
     print("Initializing Rach Scope...")

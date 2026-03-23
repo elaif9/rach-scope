@@ -18,7 +18,7 @@ blocklist = [
 
 # Collect data files and submodules
 datas = [
-    # ('assets', 'assets'),  # TODO: Uncomment when assets folder is created
+    ('assets', 'assets'),
 ]
 
 # Collect all hidden imports
@@ -90,7 +90,7 @@ if is_macos:
     app = BUNDLE(
         coll,
         name='RachScope.app',
-        icon=None,  # TODO: Add 'assets/icon.icns' when assets folder is created
+        icon='assets/logo/logo.jpg',
         bundle_identifier='com.rachscope.app',
         info_plist={
             'CFBundleDisplayName': 'RachScope',
@@ -119,5 +119,5 @@ else:
         target_arch=None,
         codesign_identity=None,
         entitlements_file=None,
-        icon=None,  # TODO: Add 'assets/icon.ico' when assets folder is created
+        icon='assets/logo/logo.jpg',
     )
