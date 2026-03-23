@@ -5,6 +5,7 @@ Entry point for the application
 import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 
 from ui.main_window import MainWindow
 from core.config_manager import ConfigManager
@@ -23,6 +24,9 @@ def main():
     # Create Qt application
     app = QApplication(sys.argv)
     app.setStyle('Fusion')  # Use Fusion style for consistent look across platforms
+
+    # Set app icon
+    app.setWindowIcon(QIcon('assets/logo/logo.jpg'))
 
     # Initialize core components
     print("Initializing Rach Scope...")
